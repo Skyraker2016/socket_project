@@ -44,8 +44,8 @@ def main():
                     data = sk.recv(1024)
                     f.write(data)
                     filesize -= len(data)
-                    progress = (tmp - filesize) / tmp
-                    sys.stdout.write("Download progress: %d%%   \r" % (progress))
+                    progress = (tmp - filesize) / tmp * 100
+                    sys.stdout.write("Download progress: %f%%   \r" % (progress))
                     sys.stdout.flush()
                 f.close()
                 print("finish to download " + filename)

@@ -44,7 +44,7 @@ def echo_client(conn, addr):
 
 def main():
     # 开启ip和端口
-    ip_port = ('127.0.0.1', 16337)
+    ip_port = ('192.168.199.', 16337)
     # 生成一个socket对象
     sk = socket.socket()
     # 绑定ip端口
