@@ -2,7 +2,7 @@
 import socket
 import hashlib
 import sys
-
+import gdt
 
 def main():
     # 链接服务端ip和端口
