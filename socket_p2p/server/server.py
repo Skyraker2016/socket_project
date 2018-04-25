@@ -53,11 +53,15 @@ def echo(conn, addr):
                 conn.send("ERROR YOU_ALREADY_GOT_IT".encode())
             else:
                 peerNum = len(peerList)
-                peerSize = math.ceil(100/peerNum)/100  # 小数点后两位向上取
+                slideSize = 720
+                slideNum = math.ceil(filesize/slideSize)
+                peerSize = math.ceil(slideNum/peerNum)
                 getList = {}
                 curInd = 0
                 for ind in range(0, peerNum):
                     getList[peerList[ind]] = (curInd, curInd+peerSize)
+                    if curInd+peerSize >= slideNum:
+                        getList[peerList[ind]] = (curInd, slideNum)
                     curInd += peerSize
                 conn.send(("SUCCESS " + str(filesize) +
                         " " + str(getList)).encode())
