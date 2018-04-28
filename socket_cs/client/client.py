@@ -1,8 +1,8 @@
-# 客户端
 import socket
 import hashlib
 import sys
 import gdt
+import hashlib
 import threading
 from tkinter import *
 
@@ -16,27 +16,35 @@ quitFlag = False
 def download(filename, filesize, server_port):
     global change, gdtList, drawLock
     print("Begin to download "+filename +" from "+str(server_port))
-    f = open(filename, 'wb')
+    dl_flag = 0
     dl = socket.socket()
     dl.connect(server_port)
     tmp = filesize
-    drawLock.acquire()
-    try:
-        gdtList[filename] = [False, 0, filesize]
-        change = True
-    finally:
-        drawLock.release()
-    while filesize>0:
-        data = dl.recv(1024)
-        f.write(data)
-        filesize -= len(data)
+    while 1 - dl_flag:
+        md5_c = hashlib.md5()
+        filesize = tmp
+        f = open(filename, 'wb')
         drawLock.acquire()
         try:
+            gdtList[filename] = [False, 0, filesize]
             change = True
-            gdtList[filename][1] = tmp-filesize
-            # print(filename+" "+str(tmp))
         finally:
             drawLock.release()
+        while filesize>0:
+            data = dl.recv(1024)
+            md5_c.update(data)
+            f.write(data)
+            filesize -= len(data)
+            drawLock.acquire()
+            try:
+                change = True
+                gdtList[filename][1] = tmp-filesize
+                # print(filename+" "+str(tmp))
+            finally:
+                drawLock.release()
+        dl.send(str(md5_c.hexdigest()).encode())
+        ackrecv = dl.recv(1024).decode()
+        dl_flag = int(ackrecv)
 
 
 def client_main():

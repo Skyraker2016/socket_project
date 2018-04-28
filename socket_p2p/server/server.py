@@ -34,11 +34,15 @@ def echo(conn, addr):
     # peer初始化
     if request.startswith("INIT"):
         request = request.lstrip("INIT ")
+        data_port=int(request.split()[0])
+        new_addr=(addr[0],data_port)
+        request=request.lstrip(request.split()[0])
+        request=request.lstrip()
         thisList = eval(request)
         for filename in thisList.keys():
             lock.acquire()
             try:
-                add_file(filename, thisList[filename], addr)
+                add_file(filename, thisList[filename], new_addr)
             finally:
                 lock.release()
         conn.send("INITACK".encode())
@@ -59,6 +63,8 @@ def echo(conn, addr):
                 getList = {}
                 curInd = 0
                 for ind in range(0, peerNum):
+                    if curInd > slideNum:
+                        break
                     getList[peerList[ind]] = (curInd, curInd+peerSize)
                     if curInd+peerSize >= slideNum:
                         getList[peerList[ind]] = (curInd, slideNum)
@@ -71,20 +77,23 @@ def echo(conn, addr):
     # 添加文件
     elif request.startswith("ADD"):
         request = request.lstrip("ADD ")
-        filename = request.split()[0]
-        filesize = int(request.split()[1])
+        dataport = int(request.split()[0])
+        filename = request.split()[1]
+        filesize = int(request.split()[2])
         lock.acquire()
+        addaddr = (addr[0], dataport)
         try:
-            add_file(filename, filesize, addr)
+            add_file(filename, filesize, addaddr)
         finally:
             lock.release()
         conn.send("ADDACK".encode())
 
     # 下线
     elif request.startswith("QUIT"):
+        quitaddr = (addr[0], int(request.split()[1]))
         lock.acquire()
         try:
-            delete_peer(addr)
+            delete_peer(quitaddr)
         finally:
             lock.release()        
         conn.send("QUITACK".encode())
@@ -95,9 +104,9 @@ def echo(conn, addr):
         conn.send(("ERROR "+"UNKNOWN_REQUEST "+request).encode())
     conn.close()
 
-def main():
+def true_main():
     # 开启ip和端口
-    ip_port = ('127.0.0.1', 16330)
+    ip_port = ('127.0.0.1', 16337)
     # 生成一个socket对象
     sk = socket.socket()
     # 绑定ip端口
@@ -113,6 +122,12 @@ def main():
         t.daemon = True
         t.start()
 
+def main():
+    t = threading.Thread(target=true_main, args=())
+    t.daemon = True
+    t.start()
+    while(1):
+        a = 1
 
 if __name__ == "__main__":
     main()
