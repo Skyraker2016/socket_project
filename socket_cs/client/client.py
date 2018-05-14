@@ -6,7 +6,7 @@ import hashlib
 import threading
 from tkinter import *
 
-myIP = '127.0.0.1'
+myIP = '192.168.199.113'
 gdtList = {} # title: [status, now, all]
 change = False
 lock = threading.Lock()
@@ -51,7 +51,7 @@ def client_main():
     global quitFlag
     # 链接服务端ip和端口
     ip_port = (myIP, 16330)
-    my_port = (myIP, 23330)
+    # my_port = (myIP, 23330)
     # 生成一个socket对象
     sk = socket.socket()
     # sk.bind(my_port)

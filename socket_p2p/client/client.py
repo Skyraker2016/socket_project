@@ -9,11 +9,9 @@ import struct
 import gdt
 from tkinter import *
 
-host_ip = "127.0.0.1"
+host_ip = "192.168.199.162"
 
-server_ip_port = ("127.0.0.1", 16337)
-# client_ip_port = (host_ip, 12345)
-# client_s_ip_port = [(host_ip, i+12346) for i in range(10)]
+server_ip_port = ("192.168.199.141", 16337)
 data_out_port = 12340
 lock = threading.Lock()
 exitflag = 1
