@@ -37,7 +37,7 @@ def traceRoute(myip, destination):
         s = socket.socket()
         nextip = Routing_Table[destination]["Next_Node"]
         s.connect((nextip, listen_port))
-        s.send("traceroute" + " " + str(ttl) + " "  + myip + " " +destination).encode()
+        s.send(("traceroute" + " " + str(ttl) + " "  + myip + " " +destination).encode())
         #'''源IP报文格式: traceroute ttl myip destinationip'''
         # responsr = s.recv(1024).decode().split()
         # '''中间路由器回复报文格式: response sourceip curip'''
@@ -214,14 +214,14 @@ def echoListener(coon, addr):
         request = request.split()
         ttl = int(request[1]) - 1
         if ttl == 0:
-            coon.send("response" + " " + request[2] + " " + ip).encode()
+            coon.send(("response" + " " + request[2] + " " + ip).encode())
         else:
             traso = socket.socket()
             nextip = Routing_Table[request[3]]["Next_Node"]
             traso.connect((nextip, listen_port))
-            traso.send("traceroute" + " " + str(ttl) + " " + request[2] + " " + request[3]).encode()
-            response = traso.recv(1024).encode()
-            coon.send(response).encode()
+            traso.send(("traceroute" + " " + str(ttl) + " " + request[2] + " " + request[3]).encode())
+            response = traso.recv(1024).decode()
+            coon.send((response).encode())
 ######
     coon.close()
 
